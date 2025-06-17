@@ -1,11 +1,36 @@
+# --- Estágio 1: Builder (O Construtor) ---
+# Aqui instalamos tudo para poder compilar o projeto
 FROM node:18 AS builder
+
 WORKDIR /usr/src/app
+
 COPY package*.json ./
-RUN npm install --only=production --legacy-peer-deps
+
+# CORREÇÃO AQUI: Removemos o '--only=production' para instalar TUDO (dev e prod)
+# Isso nos dará acesso ao comando 'nest' do @nestjs/cli
+RUN npm install
+
 COPY . .
+
+# Agora o comando 'npm run build' vai funcionar
 RUN npm run build
+
+
+# --- Estágio 2: Runner (A Imagem Final de Produção) ---
+# Usamos uma imagem base mais leve para a versão final
 FROM node:18-alpine
+
 WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Copiamos o package.json do estágio anterior...
+COPY --from=builder /usr/src/app/package*.json ./
+
+# ...e agora sim instalamos APENAS as dependências de produção
+# para manter a imagem final pequena e segura.
+RUN npm install --only=production --legacy-peer-deps
+
+# Copiamos o código já compilado (a pasta 'dist') do estágio anterior
 COPY --from=builder /usr/src/app/dist ./dist
-CMD ["node", "dist/main"]
+
+# O comando para iniciar a aplicação
+CMD [ "node", "dist/main" ]
