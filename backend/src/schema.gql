@@ -1,0 +1,53 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Telephone {
+  id: ID!
+  number: String!
+  area_code: String!
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  telephones: [Telephone!]
+  created_at: DateTime!
+  modified_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type LoginResponse {
+  access_token: String!
+}
+
+type Query {
+  me: User!
+}
+
+type Mutation {
+  signUp(createUserInput: CreateUserInput!): User!
+  signIn(loginInput: LoginInput!): LoginResponse!
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+  telephones: [TelephoneInput!]!
+}
+
+input TelephoneInput {
+  number: String!
+  area_code: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
