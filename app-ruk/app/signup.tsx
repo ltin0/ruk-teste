@@ -74,9 +74,22 @@ const SignUpScreen = () => {
           <TextInput className="w-full bg-white border border-gray-300 rounded-lg p-4 mb-6 text-lg" placeholder="Senha" value={password} onChangeText={(text) => onInputChange(setPassword, text)} secureTextEntry />
 
           <View className="flex-row w-full mb-6">
-            <TextInput className="flex-3 bg-white border border-gray-300 rounded-lg p-4 text-lg" placeholder="DDD" value={areaCode} onChangeText={(text) => onInputChange(setAreaCode, text)} keyboardType="numeric" maxLength={2} />
+            <TextInput 
+              className="w-1/4 bg-white border border-gray-300 rounded-lg p-4 text-lg text-center"
+              placeholder="DDD" 
+              value={areaCode} 
+              onChangeText={(text) => onInputChange(setAreaCode, text)} 
+              keyboardType="numeric" 
+              maxLength={2} 
+            />
             <View className="w-4" />
-            <TextInput className="flex-1 bg-white border border-gray-300 rounded-lg p-4 text-lg" placeholder="Número do Telefone" value={phoneNumber} onChangeText={(text) => onInputChange(setPhoneNumber, text)} keyboardType="numeric" />
+            <TextInput 
+              className="flex-1 bg-white border border-gray-300 rounded-lg p-4 text-lg" 
+              placeholder="Número" 
+              value={phoneNumber} 
+              onChangeText={(text) => onInputChange(setPhoneNumber, text)} 
+              keyboardType="numeric" 
+            />
           </View>
 
           {errorMessage ? <Text className="text-red-500 text-center mb-4 font-semibold">{errorMessage}</Text> : null}
