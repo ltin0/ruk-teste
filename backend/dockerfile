@@ -8,7 +8,7 @@ COPY package*.json ./
 
 # CORREÇÃO AQUI: Removemos o '--only=production' para instalar TUDO (dev e prod)
 # Isso nos dará acesso ao comando 'nest' do @nestjs/cli
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
@@ -27,7 +27,7 @@ COPY --from=builder /usr/src/app/package*.json ./
 
 # ...e agora sim instalamos APENAS as dependências de produção
 # para manter a imagem final pequena e segura.
-RUN npm install --only=production --legacy-peer-deps
+RUN npm install --only=production 
 
 # Copiamos o código já compilado (a pasta 'dist') do estágio anterior
 COPY --from=builder /usr/src/app/dist ./dist
