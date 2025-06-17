@@ -17,7 +17,6 @@ export class Telephone {
   @Column()
   area_code: string;
 
-  // Define a relação: Muitos telefones pertencem a Um usuário
   @ManyToOne(() => User, user => user.telephones)
   user: User;
 }

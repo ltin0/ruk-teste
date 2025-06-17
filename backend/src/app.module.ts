@@ -12,7 +12,7 @@ import { Telephone } from './user/entities/telephone.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Torna o ConfigModule global
+      isGlobal: true,
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -21,7 +21,6 @@ import { Telephone } from './user/entities/telephone.entity';
       playground: true,
     }),
 
-    // Configuração do TypeORM adaptada para deploy
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
