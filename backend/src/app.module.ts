@@ -3,28 +3,39 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { ConfigModule } from '@nestjs/config'; // Importe
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { User } from './user/entities/user.entity';
+import { Telephone } from './user/entities/telephone.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-GraphQLModule.forRoot({
-  driver: ApolloDriver,
-  autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-  playground: true,
-}),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'docker',
-      password: 'docker',
-      database: 'desafio',
-      synchronize: true, // Sincroniza as entidades com o DB (apenas para dev)
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true, // Torna o ConfigModule global
     }),
+
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      playground: true,
+    }),
+
+    // Configuração do TypeORM adaptada para deploy
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        url: configService.get<string>('DATABASE_URL'),
+        entities: [User, Telephone],
+        synchronize: true,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }),
+    }),
+
     UserModule,
     AuthModule,
   ],
