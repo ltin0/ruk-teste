@@ -21,7 +21,6 @@ export class AuthResolver {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Se o usuário for válido, o AuthService gera e retorna o token
     return this.authService.login(user);
   }
 }

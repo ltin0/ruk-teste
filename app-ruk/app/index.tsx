@@ -50,7 +50,6 @@ const LoginScreen = () => {
     signIn({ variables: { email, password } });
   };
 
-  // Função para limpar a mensagem de erro ao digitar
   const handleInputChange = (setter, value) => {
     setter(value);
     if (errorMessage) {
@@ -67,7 +66,7 @@ const LoginScreen = () => {
           className="w-full bg-white border border-gray-300 rounded-lg p-4 mb-4 text-lg"
           placeholder="E-mail"
           value={email}
-          onChangeText={(text) => handleInputChange(setEmail, text)} // <-- Lógica para limpar erro
+          onChangeText={(text) => handleInputChange(setEmail, text)} 
           keyboardType="email-address"
           autoCapitalize="none"
         />
@@ -76,7 +75,7 @@ const LoginScreen = () => {
           className="w-full bg-white border border-gray-300 rounded-lg p-4 mb-6 text-lg"
           placeholder="Senha"
           value={password}
-          onChangeText={(text) => handleInputChange(setPassword, text)} // <-- Lógica para limpar erro
+          onChangeText={(text) => handleInputChange(setPassword, text)} 
           secureTextEntry
         />
 
