@@ -1,19 +1,26 @@
-FROM node:20-bullseye AS builder
+FROM node:18-bullseye AS builder
+
+RUN apt-get update && apt-get install -y openssl libssl-dev
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn install && npx expo install --fix
+COPY package*.json ./
+COPY prisma ./prisma
+
+RUN npm install --legacy-peer-deps
 
 COPY . .
+RUN npm run build
 
-RUN yarn expo export:web
+FROM node:18-bullseye
 
-FROM nginx:1.25-alpine
+WORKDIR /app
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist/web /usr/share/nginx/html
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
+RUN npm install --omit=dev --legacy-peer-deps
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma/client ./node_modules/.prisma/client
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+CMD [ "npm", "run", "start:prod" ]
