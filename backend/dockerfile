@@ -1,11 +1,8 @@
 FROM node:20-bullseye AS builder
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update && apt-get install -y openssl libssl-dev
 WORKDIR /app
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-#para gerar o Prisma Client
-COPY prisma ./prisma
-RUN npx prisma generate
 COPY . .
 RUN npm run build
 FROM node:20-alpine
@@ -14,7 +11,10 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 RUN npm install --omit=dev --legacy-peer-deps
 COPY --from=builder /app/dist ./dist
-#porta que o Render vai usar
+COPY --from=builder /app/node_modules/.prisma/client ./node_modules/.prisma/client
+
 EXPOSE 3000
 
 CMD [ "npm", "run", "start:prod" ]
+
+
