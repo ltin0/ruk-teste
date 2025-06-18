@@ -20,7 +20,9 @@ yarn-error.log*
 # IDE/Editor folders
 .vscode/
 .idea/
+.docker/
 
 # OS generated files
 .DS_Store
 Thumbs.db
+

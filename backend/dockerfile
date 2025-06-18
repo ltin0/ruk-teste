@@ -1,13 +1,19 @@
-FROM node:18 AS builder
-WORKDIR /usr/src/app
+FROM node:20-alpine AS builder
+WORKDIR /app
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install
+#para gerar o Prisma Client
+COPY prisma ./prisma
+RUN npx prisma generate
 COPY . .
 RUN npm run build
-FROM node:18-alpine
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/package*.json ./
-RUN npm install --only=production --legacy-peer-deps
-COPY --from=builder /usr/src/app/dist ./dist
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
+RUN npm install --omit=dev
+COPY --from=builder /app/dist ./dist
+#porta que o Render vai usar
+EXPOSE 3000
 
-CMD [ "node", "dist/main" ]
+CMD [ "npm", "run", "start:prod" ]

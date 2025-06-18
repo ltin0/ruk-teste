@@ -2,7 +2,11 @@
   "dependencies": {
     "@apollo/server": "^4.12.2",
     "@nestjs/graphql": "^12.2.2",
+    "eas": "^0.1.0",
     "graphql": "^16.11.0",
     "heroku": "^8.7.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.10.0"
   }
 }

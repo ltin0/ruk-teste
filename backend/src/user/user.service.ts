@@ -1,48 +1,37 @@
-import { Injectable, InternalServerErrorException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateUserInput } from './dto/create-user.input';
-import { Telephone } from './entities/telephone.entity';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
+import { User, Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createUserInput: CreateUserInput): Promise<User> {
-    const { name, email, password, telephones } = createUserInput;
-
-    // Verifica se o e-mail já existe
-    const emailExists = await this.userRepository.findOne({ where: { email } });
+  async create(data: Prisma.UserCreateInput): Promise<User> {
+    const emailExists = await this.findOneByEmail(data.email);
     if (emailExists) {
       throw new ConflictException('E-mail already in use');
     }
 
-    const user = this.userRepository.create({
-      name,
-      email,
-      password, // A senha será hasheada pelo hook @BeforeInsert na entidade
-      telephones: telephones.map(t => Object.assign(new Telephone(), t)),
+    // O Hashing da senha agora é feito aqui, antes de salvar
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    return this.prisma.user.create({
+      data: {
+        ...data,
+        password: hashedPassword,
+      },
     });
-
-    try {
-      await this.userRepository.save(user);
-      return user;
-    } catch (error) {
-      throw new InternalServerErrorException('Error saving user to database');
-    }
   }
 
-  // Função para encontrar usuário por e-mail (será usada na autenticação)
-  async findOneByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { email } });
   }
-  
-  // Função para encontrar usuário por ID (será usada na autenticação)
-  async findOneById(id: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { id } });
+
+  async findOneById(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: { telephones: true },
+    });
   }
 }
