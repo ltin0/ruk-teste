@@ -1,12 +1,13 @@
 {
   "name": "app-ruk",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+    "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "codegen": "graphql-codegen"
   },
   "dependencies": {
     "@apollo/client": "^3.9.11",
@@ -30,6 +31,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/client-preset": "^4.8.2",
     "@types/react": "~18.2.45",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",

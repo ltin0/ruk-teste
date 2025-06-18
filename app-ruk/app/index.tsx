@@ -9,18 +9,10 @@ import {
   KeyboardAvoidingView, 
   Platform 
 } from 'react-native';
-import { gql, useMutation } from '@apollo/client';
+import { useSignInMutation } from '../src/generated/graphql';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
-// A mutação GraphQL para fazer o login
-const SIGN_IN_MUTATION = gql`
-  mutation SignIn($email: String!, $password: String!) {
-    signIn(loginInput: { email: $email, password: $password }) {
-      access_token
-    }
-  }
-`;
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +21,7 @@ const LoginScreen = () => {
   const router = useRouter(); 
 
   // Hook do Apollo para executar a mutação
-  const [signIn, { loading }] = useMutation(SIGN_IN_MUTATION, {
+  const [signIn, { loading }] = useSignInMutation({
     onCompleted: async (data) => {
       const token = data.signIn.access_token;
       await AsyncStorage.setItem('user-token', token);

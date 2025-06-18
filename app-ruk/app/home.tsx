@@ -1,26 +1,14 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
-import { gql, useQuery } from '@apollo/client';
+import { useGetMeQuery } from '../src/generated/graphql';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const GET_ME_QUERY = gql`
-  query GetMe {
-    me {
-      id
-      name
-      email
-      telephones {
-        area_code
-        number
-      }
-    }
-  }
-`;
+
 
 const HomeScreen = () => {
   const router = useRouter();
-  const { data, loading, error } = useQuery(GET_ME_QUERY);
+  const { data, loading, error } = useGetMeQuery();
   const handleLogout = async () => {
     await AsyncStorage.removeItem('user-token');
     router.replace('/'); 
