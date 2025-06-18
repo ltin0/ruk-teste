@@ -1,7 +1,12 @@
 FROM node:20-bullseye AS builder
-RUN apt-get update && apt-get install -y openssl libssl-dev
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y openssl libssl-dev
+
 COPY package*.json ./
+
+COPY prisma ./prisma
+
 RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
@@ -14,7 +19,8 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma/client ./node_modules/.prisma/client
 
 EXPOSE 3000
-
 CMD [ "npm", "run", "start:prod" ]
+
+
 
 
